@@ -1,8 +1,6 @@
 'use client'
 
 import { ProductTable } from '@/components/dashboard/ProductTable'
-import { ProfitChart } from '@/components/dashboard/ProfitChart'
-import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { useEffect, useState } from 'react'
 
@@ -70,30 +68,25 @@ export default function Home() {
 
 	return (
 		<div className='min-h-screen bg-background'>
-			<div className='container mx-auto py-10 px-4'>
-				<header className='mb-8'>
-					<h1 className='text-4xl font-bold tracking-tight'>Mini CRM</h1>
-					<p className='text-muted-foreground mt-2'>Учет товаров и продаж</p>
+			<div className='container mx-auto py-4 px-3 sm:py-10 sm:px-4'>
+				<header className='mb-6 sm:mb-8'>
+					<h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight'>
+						Mini CRM
+					</h1>
+					<p className='text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base'>
+						Учет товаров и продаж
+					</p>
 				</header>
 
 				<div className='space-y-8'>
 					{stats && (
-						<>
-							<StatsCards
-								totalCost={stats.totalCost}
-								totalRevenue={stats.totalRevenue}
-								totalProfit={stats.totalProfit}
-								soldCount={stats.soldCount}
-								availableCount={stats.availableCount}
-							/>
-
-							{stats.dailyStats.length > 0 && (
-								<div className='grid gap-4 md:grid-cols-2'>
-									<RevenueChart data={stats.dailyStats} />
-									<ProfitChart data={stats.dailyStats} />
-								</div>
-							)}
-						</>
+						<StatsCards
+							totalCost={stats.totalCost}
+							totalRevenue={stats.totalRevenue}
+							totalProfit={stats.totalProfit}
+							soldCount={stats.soldCount}
+							availableCount={stats.availableCount}
+						/>
 					)}
 
 					<ProductTable products={products} onUpdate={fetchData} />

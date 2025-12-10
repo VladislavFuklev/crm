@@ -104,20 +104,20 @@ export function ProductForm({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className='sm:max-w-[500px]'>
+			<DialogContent className='sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6'>
 				<form onSubmit={handleSubmit}>
 					<DialogHeader>
-						<DialogTitle>
+						<DialogTitle className='text-lg sm:text-xl'>
 							{product ? 'Редактировать товар' : 'Добавить товар'}
 						</DialogTitle>
-						<DialogDescription>
+						<DialogDescription className='text-xs sm:text-sm'>
 							{product
 								? 'Обновите информацию о товаре'
 								: 'Введите данные нового товара для учета'}
 						</DialogDescription>
 					</DialogHeader>
 
-					<div className='grid gap-4 py-4'>
+					<div className='grid gap-3 sm:gap-4 py-3 sm:py-4'>
 						<div className='grid gap-2'>
 							<Label htmlFor='name'>Название товара *</Label>
 							<Input
@@ -196,15 +196,20 @@ export function ProductForm({
 						)}
 					</div>
 
-					<DialogFooter>
+					<DialogFooter className='flex-col sm:flex-row gap-2'>
 						<Button
 							type='button'
 							variant='outline'
 							onClick={() => onOpenChange(false)}
+							className='w-full sm:w-auto'
 						>
 							Отмена
 						</Button>
-						<Button type='submit' disabled={loading}>
+						<Button
+							type='submit'
+							disabled={loading}
+							className='w-full sm:w-auto'
+						>
 							{loading ? 'Сохранение...' : 'Сохранить'}
 						</Button>
 					</DialogFooter>

@@ -29,65 +29,73 @@ export function StatsCards({
 		totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : '0'
 
 	return (
-		<div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+		<div className='grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
 			<Card>
-				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-					<CardTitle className='text-sm font-medium'>Общие расходы</CardTitle>
-					<DollarSign className='h-4 w-4 text-muted-foreground' />
+				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6'>
+					<CardTitle className='text-xs sm:text-sm font-medium'>
+						Общие расходы
+					</CardTitle>
+					<DollarSign className='h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground' />
 				</CardHeader>
-				<CardContent>
-					<div className='text-2xl font-bold'>{formatCurrency(totalCost)}</div>
-					<p className='text-xs text-muted-foreground'>
+				<CardContent className='p-4 pt-0 sm:p-6 sm:pt-0'>
+					<div className='text-lg sm:text-2xl font-bold'>
+						{formatCurrency(totalCost)}
+					</div>
+					<p className='text-[10px] sm:text-xs text-muted-foreground mt-1'>
 						Себестоимость всех товаров
 					</p>
 				</CardContent>
 			</Card>
 
 			<Card>
-				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-					<CardTitle className='text-sm font-medium'>Общий доход</CardTitle>
-					<TrendingUp className='h-4 w-4 text-muted-foreground' />
+				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6'>
+					<CardTitle className='text-xs sm:text-sm font-medium'>
+						Общий доход
+					</CardTitle>
+					<TrendingUp className='h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground' />
 				</CardHeader>
-				<CardContent>
-					<div className='text-2xl font-bold text-green-600'>
+				<CardContent className='p-4 pt-0 sm:p-6 sm:pt-0'>
+					<div className='text-lg sm:text-2xl font-bold text-green-600'>
 						{formatCurrency(totalRevenue)}
 					</div>
-					<p className='text-xs text-muted-foreground'>
+					<p className='text-[10px] sm:text-xs text-muted-foreground mt-1'>
 						Продано товаров: {soldCount}
 					</p>
 				</CardContent>
 			</Card>
 
 			<Card>
-				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-					<CardTitle className='text-sm font-medium'>Прибыль</CardTitle>
-					<TrendingUp className='h-4 w-4 text-muted-foreground' />
+				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6'>
+					<CardTitle className='text-xs sm:text-sm font-medium'>
+						Прибыль
+					</CardTitle>
+					<TrendingUp className='h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground' />
 				</CardHeader>
-				<CardContent>
+				<CardContent className='p-4 pt-0 sm:p-6 sm:pt-0'>
 					<div
-						className={`text-2xl font-bold ${
+						className={`text-lg sm:text-2xl font-bold ${
 							totalProfit >= 0 ? 'text-green-600' : 'text-red-600'
 						}`}
 					>
 						{formatCurrency(totalProfit)}
 					</div>
-					<p className='text-xs text-muted-foreground'>
+					<p className='text-[10px] sm:text-xs text-muted-foreground mt-1'>
 						Маржа: {profitMargin}%
 					</p>
 				</CardContent>
 			</Card>
 
 			<Card>
-				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-					<CardTitle className='text-sm font-medium'>
+				<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6'>
+					<CardTitle className='text-xs sm:text-sm font-medium'>
 						Товары в наличии
 					</CardTitle>
-					<Package className='h-4 w-4 text-muted-foreground' />
+					<Package className='h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground' />
 				</CardHeader>
-				<CardContent>
-					<div className='text-2xl font-bold'>{availableCount}</div>
-					<p className='text-xs text-muted-foreground'>
-						<ShoppingCart className='inline h-3 w-3 mr-1' />
+				<CardContent className='p-4 pt-0 sm:p-6 sm:pt-0'>
+					<div className='text-lg sm:text-2xl font-bold'>{availableCount}</div>
+					<p className='text-[10px] sm:text-xs text-muted-foreground mt-1'>
+						<ShoppingCart className='inline h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1' />
 						Доступно для продажи
 					</p>
 				</CardContent>

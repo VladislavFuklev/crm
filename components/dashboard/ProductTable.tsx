@@ -105,18 +105,19 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 
 	return (
 		<Card>
-			<CardHeader>
-				<div className='flex items-center justify-between'>
+			<CardHeader className='p-4 sm:p-6'>
+				<div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
 					<div>
-						<CardTitle>Управление товарами</CardTitle>
-						<CardDescription>
-							Всего товаров: {products.length} • Показано:{' '}
-							{filteredProducts.length}
+						<CardTitle className='text-lg sm:text-xl'>
+							Управление товарами
+						</CardTitle>
+						<CardDescription className='text-xs sm:text-sm mt-1'>
+							Всего: {products.length} • Показано: {filteredProducts.length}
 						</CardDescription>
 					</div>
-					<div className='flex gap-2'>
+					<div className='flex flex-col sm:flex-row gap-2'>
 						<Select value={filter} onValueChange={setFilter}>
-							<SelectTrigger className='w-[180px]'>
+							<SelectTrigger className='w-full sm:w-[180px]'>
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -125,25 +126,36 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 								<SelectItem value='sold'>Проданные</SelectItem>
 							</SelectContent>
 						</Select>
-						<Button onClick={() => setShowAddForm(true)}>
+						<Button
+							onClick={() => setShowAddForm(true)}
+							className='w-full sm:w-auto'
+						>
 							<Plus className='mr-2 h-4 w-4' />
-							Добавить товар
+							<span className='sm:inline'>Добавить</span>
 						</Button>
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent>
-				<div className='rounded-md border'>
+			<CardContent className='p-0 sm:p-6'>
+				<div className='rounded-md border overflow-x-auto'>
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead>Название</TableHead>
-								<TableHead>Себестоимость</TableHead>
-								<TableHead>Цена продажи</TableHead>
-								<TableHead>Прибыль</TableHead>
+								<TableHead className='min-w-[120px]'>Название</TableHead>
+								<TableHead className='hidden sm:table-cell'>
+									Себестоимость
+								</TableHead>
+								<TableHead className='hidden md:table-cell'>
+									Цена продажи
+								</TableHead>
+								<TableHead className='hidden lg:table-cell'>Прибыль</TableHead>
 								<TableHead>Статус</TableHead>
-								<TableHead>Дата добавления</TableHead>
-								<TableHead>Дата продажи</TableHead>
+								<TableHead className='hidden xl:table-cell'>
+									Дата добавления
+								</TableHead>
+								<TableHead className='hidden xl:table-cell'>
+									Дата продажи
+								</TableHead>
 								<TableHead className='text-right'>Действия</TableHead>
 							</TableRow>
 						</TableHeader>
@@ -152,7 +164,7 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 								<TableRow>
 									<TableCell
 										colSpan={8}
-										className='text-center text-muted-foreground'
+										className='text-center text-muted-foreground py-8'
 									>
 										Нет товаров для отображения
 									</TableCell>
@@ -162,14 +174,16 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 									const profit = getProfit(product)
 									return (
 										<TableRow key={product.id}>
-											<TableCell className='font-medium'>
+											<TableCell className='font-medium text-xs sm:text-sm'>
 												{product.name}
 											</TableCell>
-											<TableCell>{formatCurrency(product.costPrice)}</TableCell>
-											<TableCell>
+											<TableCell className='hidden sm:table-cell text-xs sm:text-sm'>
+												{formatCurrency(product.costPrice)}
+											</TableCell>
+											<TableCell className='hidden md:table-cell text-xs sm:text-sm'>
 												{formatCurrency(product.sellingPrice)}
 											</TableCell>
-											<TableCell>
+											<TableCell className='hidden lg:table-cell text-xs sm:text-sm'>
 												{profit !== null ? (
 													<span
 														className={
@@ -184,32 +198,38 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 											</TableCell>
 											<TableCell>
 												<span
-													className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+													className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-medium ${
 														product.status === 'sold'
 															? 'bg-green-100 text-green-800'
 															: 'bg-blue-100 text-blue-800'
 													}`}
 												>
-													{product.status === 'sold' ? 'Продано' : 'В наличии'}
+													{product.status === 'sold' ? 'Продано' : 'Наличие'}
 												</span>
 											</TableCell>
-											<TableCell>{formatDate(product.createdAt)}</TableCell>
-											<TableCell>{formatDate(product.soldAt)}</TableCell>
+											<TableCell className='hidden xl:table-cell text-xs'>
+												{formatDate(product.createdAt)}
+											</TableCell>
+											<TableCell className='hidden xl:table-cell text-xs'>
+												{formatDate(product.soldAt)}
+											</TableCell>
 											<TableCell className='text-right'>
-												<div className='flex justify-end gap-2'>
+												<div className='flex justify-end gap-1'>
 													<Button
 														variant='ghost'
 														size='icon'
+														className='h-8 w-8'
 														onClick={() => handleEdit(product)}
 													>
-														<Edit className='h-4 w-4' />
+														<Edit className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
 													</Button>
 													<Button
 														variant='ghost'
 														size='icon'
+														className='h-8 w-8'
 														onClick={() => handleDelete(product.id)}
 													>
-														<Trash2 className='h-4 w-4 text-red-600' />
+														<Trash2 className='h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600' />
 													</Button>
 												</div>
 											</TableCell>
