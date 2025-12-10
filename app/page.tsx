@@ -11,7 +11,6 @@ type Product = {
 	sellingPrice: number | null
 	status: string
 	createdAt: string
-	soldAt: string | null
 }
 
 type Stats = {

@@ -34,7 +34,6 @@ type Product = {
 	sellingPrice: number | null
 	status: string
 	createdAt: string
-	soldAt: string | null
 }
 
 type ProductTableProps = {
@@ -153,9 +152,6 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 								<TableHead className='hidden xl:table-cell'>
 									Дата добавления
 								</TableHead>
-								<TableHead className='hidden xl:table-cell'>
-									Дата продажи
-								</TableHead>
 								<TableHead className='text-right'>Действия</TableHead>
 							</TableRow>
 						</TableHeader>
@@ -163,7 +159,7 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 							{filteredProducts.length === 0 ? (
 								<TableRow>
 									<TableCell
-										colSpan={8}
+										colSpan={7}
 										className='text-center text-muted-foreground py-8'
 									>
 										Нет товаров для отображения
@@ -209,9 +205,6 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 											</TableCell>
 											<TableCell className='hidden xl:table-cell text-xs'>
 												{formatDate(product.createdAt)}
-											</TableCell>
-											<TableCell className='hidden xl:table-cell text-xs'>
-												{formatDate(product.soldAt)}
 											</TableCell>
 											<TableCell className='text-right'>
 												<div className='flex justify-end gap-1'>

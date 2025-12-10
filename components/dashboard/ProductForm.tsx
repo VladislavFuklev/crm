@@ -18,7 +18,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Product = {
 	id: string
@@ -27,7 +27,6 @@ type Product = {
 	sellingPrice: number | null
 	status: string
 	createdAt: string
-	soldAt: string | null
 }
 
 type ProductFormProps = {
@@ -49,10 +48,26 @@ export function ProductForm({
 		costPrice: product?.costPrice?.toString() || '',
 		sellingPrice: product?.sellingPrice?.toString() || '',
 		status: product?.status || 'available',
-		soldAt: product?.soldAt
-			? new Date(product.soldAt).toISOString().split('T')[0]
-			: '',
 	})
+
+	// Обновление формы при изменении product
+	useEffect(() => {
+		if (product) {
+			setFormData({
+				name: product.name || '',
+				costPrice: product.costPrice?.toString() || '',
+				sellingPrice: product.sellingPrice?.toString() || '',
+				status: product.status || 'available',
+			})
+		} else {
+			setFormData({
+				name: '',
+				costPrice: '',
+				sellingPrice: '',
+				status: 'available',
+			})
+		}
+	}, [product, open])
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -70,7 +85,6 @@ export function ProductForm({
 					? parseFloat(formData.sellingPrice)
 					: null,
 				status: formData.status,
-				soldAt: formData.soldAt || null,
 			}
 
 			const response = await fetch(url, {
@@ -91,7 +105,6 @@ export function ProductForm({
 					costPrice: '',
 					sellingPrice: '',
 					status: 'available',
-					soldAt: '',
 				})
 			}
 		} catch (error) {
@@ -116,7 +129,6 @@ export function ProductForm({
 								: 'Введите данные нового товара для учета'}
 						</DialogDescription>
 					</DialogHeader>
-
 					<div className='grid gap-3 sm:gap-4 py-3 sm:py-4'>
 						<div className='grid gap-2'>
 							<Label htmlFor='name'>Название товара *</Label>
@@ -165,37 +177,22 @@ export function ProductForm({
 						</div>
 
 						{formData.status === 'sold' && (
-							<>
-								<div className='grid gap-2'>
-									<Label htmlFor='sellingPrice'>Цена продажи (UAH) *</Label>
-									<Input
-										id='sellingPrice'
-										type='number'
-										step='0.01'
-										value={formData.sellingPrice}
-										onChange={e =>
-											setFormData({ ...formData, sellingPrice: e.target.value })
-										}
-										placeholder='0.00'
-										required={formData.status === 'sold'}
-									/>
-								</div>
-
-								<div className='grid gap-2'>
-									<Label htmlFor='soldAt'>Дата продажи</Label>
-									<Input
-										id='soldAt'
-										type='date'
-										value={formData.soldAt}
-										onChange={e =>
-											setFormData({ ...formData, soldAt: e.target.value })
-										}
-									/>
-								</div>
-							</>
+							<div className='grid gap-2'>
+								<Label htmlFor='sellingPrice'>Цена продажи (UAH) *</Label>
+								<Input
+									id='sellingPrice'
+									type='number'
+									step='0.01'
+									value={formData.sellingPrice}
+									onChange={e =>
+										setFormData({ ...formData, sellingPrice: e.target.value })
+									}
+									placeholder='0.00'
+									required={formData.status === 'sold'}
+								/>
+							</div>
 						)}
-					</div>
-
+					</div>{' '}
 					<DialogFooter className='flex-col sm:flex-row gap-2'>
 						<Button
 							type='button'

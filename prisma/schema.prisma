@@ -20,7 +20,6 @@ model Product {
   sellingPrice Float?   // Цена продажи (null если еще не продан)
   status       String   @default("available") // available, sold
   createdAt    DateTime @default(now())
-  soldAt       DateTime? // Дата продажи
   
   @@map("products")
 }
