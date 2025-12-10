@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mini CRM - Учет товаров и продаж
 
-## Getting Started
+Веб-приложение для учета расходов, доходов и управления товарами с красивым интерфейсом на основе Next.js, shadcn/ui, Prisma и PostgreSQL.
 
-First, run the development server:
+## Возможности
+
+- 📊 **Статистика в реальном времени**: карточки с общими расходами, доходами, прибылью
+- 📈 **Графики**: динамика доходов/расходов и прибыли по дням (Recharts)
+- 📦 **Управление товарами**: добавление, редактирование, удаление товаров
+- 🔍 **Фильтрация**: просмотр всех товаров, только в наличии или проданных
+- 💰 **Автоматический расчет прибыли**: разница между ценой продажи и себестоимостью
+- 🎨 **Современный UI**: shadcn/ui компоненты с Tailwind CSS v4
+
+## Технологии
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **UI**: shadcn/ui, Tailwind CSS v4, Lucide Icons
+- **Charts**: Recharts
+- **Backend**: Next.js API Routes
+- **Database**: PostgreSQL + Prisma ORM
+- **Deploy**: Vercel
+
+## Начало работы
+
+### 1. Установка зависимостей
+
+```bash
+npm install
+```
+
+### 2. Настройка базы данных
+
+Создайте файл `.env` в корне проекта:
+
+```bash
+cp .env.example .env
+```
+
+Для локальной разработки или Vercel Postgres обновите `DATABASE_URL`:
+
+```env
+# Локальная PostgreSQL
+DATABASE_URL="postgresql://user:password@localhost:5432/crm_db?schema=public"
+
+# Или Vercel Postgres (получите URL в Vercel Dashboard > Storage)
+DATABASE_URL="postgres://default:xxxxx@xxx-pooler.xxx.vercel-storage.com/verceldb?sslmode=require"
+```
+
+### 3. Создание таблиц в базе данных
+
+```bash
+npx prisma db push
+```
+
+### 4. Запуск dev сервера
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000) в браузере.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Деплой на Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Вариант 1: Vercel Postgres (рекомендуется)
 
-## Learn More
+1. Пушим проект в GitHub
+2. Импортируем в Vercel
+3. В Vercel Dashboard → Storage → Create Database → Postgres
+4. Подключаем БД к проекту (автоматически добавит `DATABASE_URL`)
+5. В Settings → Environment Variables проверяем `DATABASE_URL`
+6. Выполняем команду для создания таблиц:
+   ```bash
+   npx prisma db push
+   ```
+7. Redeploy проекта
 
-To learn more about Next.js, take a look at the following resources:
+### Вариант 2: Внешняя PostgreSQL
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Создайте PostgreSQL БД (Supabase, Railway, Neon и т.д.)
+2. В Vercel → Settings → Environment Variables добавьте `DATABASE_URL`
+3. Деплой проекта
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Структура проекта
 
-## Deploy on Vercel
+```
+├── app/
+│   ├── api/
+│   │   ├── products/
+│   │   │   ├── route.ts          # GET, POST товары
+│   │   │   └── [id]/route.ts     # PATCH, DELETE товар
+│   │   └── stats/route.ts        # GET статистика
+│   ├── layout.tsx
+│   ├── page.tsx                   # Главная страница
+│   └── globals.css
+├── components/
+│   ├── ui/                        # shadcn/ui компоненты
+│   └── dashboard/
+│       ├── StatsCards.tsx         # Карточки статистики
+│       ├── RevenueChart.tsx       # График доходов/расходов
+│       ├── ProfitChart.tsx        # График прибыли
+│       ├── ProductTable.tsx       # Таблица товаров
+│       └── ProductForm.tsx        # Форма добавления/редактирования
+├── prisma/
+│   └── schema.prisma              # Схема БД
+└── lib/
+    ├── prisma.ts                  # Prisma Client
+    └── utils.ts                   # Утилиты
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `GET /api/products` - получить все товары
+- `POST /api/products` - добавить товар
+- `PATCH /api/products/[id]` - обновить товар
+- `DELETE /api/products/[id]` - удалить товар
+- `GET /api/stats` - получить статистику
+
+## Модель данных
+
+```prisma
+model Product {
+  id           String   @id @default(cuid())
+  name         String
+  costPrice    Float    // Себестоимость
+  sellingPrice Float?   // Цена продажи
+  status       String   @default("available") // available | sold
+  createdAt    DateTime @default(now())
+  soldAt       DateTime?
+}
+```
+
+## Разработка
+
+```bash
+# Запуск dev сервера
+npm run dev
+
+# Сборка продакшн версии
+npm run build
+
+# Запуск продакшн сервера
+npm start
+
+# Prisma Studio (GUI для БД)
+npx prisma studio
+```
+
+## Лицензия
+
+MIT
