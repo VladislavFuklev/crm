@@ -62,6 +62,14 @@ npm run dev
 
 ## Деплой на Vercel
 
+### Важно! Настройка переменных окружения
+
+Перед деплоем убедитесь, что в Vercel настроена переменная `DATABASE_URL`:
+
+1. Зайдите в Vercel Dashboard → Ваш проект → Settings → Environment Variables
+2. Добавьте `DATABASE_URL` со значением из вашей PostgreSQL базы
+3. Важно: добавьте для всех окружений (Production, Preview, Development)
+
 ### Вариант 1: Vercel Postgres (рекомендуется)
 
 1. Пушим проект в GitHub
@@ -75,11 +83,31 @@ npm run dev
    ```
 7. Redeploy проекта
 
-### Вариант 2: Внешняя PostgreSQL
+### Вариант 2: Внешняя PostgreSQL (Prisma Postgres, Supabase и т.д.)
 
-1. Создайте PostgreSQL БД (Supabase, Railway, Neon и т.д.)
+1. Создайте PostgreSQL БД (Prisma Postgres, Supabase, Railway, Neon и т.д.)
 2. В Vercel → Settings → Environment Variables добавьте `DATABASE_URL`
 3. Деплой проекта
+4. После первого деплоя выполните миграцию:
+   ```bash
+   npx prisma db push
+   ```
+
+### Решение проблем
+
+**Ошибка 500 на всех API endpoints:**
+- Проверьте, что `DATABASE_URL` добавлена в Environment Variables
+- Убедитесь, что переменная добавлена для Production окружения
+- После добавления переменной сделайте Redeploy
+- Проверьте логи в Vercel Dashboard → Deployments → Функции → Runtime Logs
+
+**Prisma Client не генерируется:**
+- Убедитесь, что в `package.json` есть скрипт `postinstall: "prisma generate"`
+- Проверьте логи сборки (Build Logs) в Vercel
+
+**База данных пустая:**
+- Выполните `npx prisma db push` для создания таблиц
+- Или используйте Prisma Studio для проверки: `npx prisma studio`
 
 ## Структура проекта
 
@@ -126,7 +154,6 @@ model Product {
   sellingPrice Float?   // Цена продажи
   status       String   @default("available") // available | sold
   createdAt    DateTime @default(now())
-  soldAt       DateTime?
 }
 ```
 
