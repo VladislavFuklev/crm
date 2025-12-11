@@ -28,9 +28,9 @@ export async function GET() {
 
 		// Группировка по дням для графиков
 		const dailyStats = products
-			.filter(p => p.status === 'sold' && p.soldAt)
+			.filter(p => p.status === 'sold')
 			.reduce((acc: DailyStat[], product) => {
-				const date = product.soldAt!.toISOString().split('T')[0]
+				const date = product.createdAt.toISOString().split('T')[0]
 				const existing = acc.find(item => item.date === date)
 
 				const revenue = product.sellingPrice || 0
