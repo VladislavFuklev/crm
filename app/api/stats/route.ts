@@ -65,7 +65,8 @@ export async function GET() {
 		})
 	} catch (error) {
 		console.error('Error fetching stats:', error)
-		const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+		const errorMessage =
+			error instanceof Error ? error.message : 'Unknown error'
 		console.error('Error details:', errorMessage)
 		return NextResponse.json(
 			{ error: 'Failed to fetch stats', details: errorMessage },

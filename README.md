@@ -96,16 +96,19 @@ npm run dev
 ### Решение проблем
 
 **Ошибка 500 на всех API endpoints:**
+
 - Проверьте, что `DATABASE_URL` добавлена в Environment Variables
 - Убедитесь, что переменная добавлена для Production окружения
 - После добавления переменной сделайте Redeploy
 - Проверьте логи в Vercel Dashboard → Deployments → Функции → Runtime Logs
 
 **Prisma Client не генерируется:**
+
 - Убедитесь, что в `package.json` есть скрипт `postinstall: "prisma generate"`
 - Проверьте логи сборки (Build Logs) в Vercel
 
 **База данных пустая:**
+
 - Выполните `npx prisma db push` для создания таблиц
 - Или используйте Prisma Studio для проверки: `npx prisma studio`
 
