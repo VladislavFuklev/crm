@@ -10,6 +10,8 @@ type Product = {
 	costPrice: number
 	sellingPrice: number | null
 	status: string
+	quantity: number
+	soldQuantity: number
 	createdAt: string
 }
 
