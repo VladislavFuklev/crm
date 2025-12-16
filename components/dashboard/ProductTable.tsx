@@ -143,16 +143,10 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 						<TableHeader>
 							<TableRow>
 								<TableHead className='min-w-[120px]'>Название</TableHead>
-								<TableHead className='hidden sm:table-cell'>
-									Себестоимость
-								</TableHead>
-								<TableHead className='hidden sm:table-cell'>
-									Количество
-								</TableHead>
-								<TableHead className='hidden md:table-cell'>
-									Цена продажи
-								</TableHead>
-								<TableHead className='hidden lg:table-cell'>Прибыль</TableHead>
+								<TableHead>Себестоимость</TableHead>
+								<TableHead>Количество</TableHead>
+								<TableHead>Цена продажи</TableHead>
+								<TableHead>Прибыль</TableHead>
 								<TableHead>Статус</TableHead>
 								<TableHead className='hidden xl:table-cell'>
 									Дата добавления
@@ -179,13 +173,13 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 											<TableCell className='font-medium text-xs sm:text-sm'>
 												{product.name}
 											</TableCell>
-											<TableCell className='hidden sm:table-cell text-xs sm:text-sm'>
+											<TableCell className='text-xs sm:text-sm'>
 												{formatCurrency(product.costPrice * product.quantity)}
 												<span className='text-xs text-muted-foreground ml-1'>
 													(×{product.quantity})
 												</span>
 											</TableCell>
-											<TableCell className='hidden sm:table-cell text-xs sm:text-sm'>
+											<TableCell className='text-xs sm:text-sm'>
 												<div className='flex flex-col'>
 													<span>{product.quantity} шт</span>
 													<span className='text-xs text-muted-foreground'>
@@ -196,7 +190,7 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 													</span>
 												</div>
 											</TableCell>
-											<TableCell className='hidden md:table-cell text-xs sm:text-sm'>
+											<TableCell className='text-xs sm:text-sm'>
 												{product.soldQuantity > 0 && product.sellingPrice ? (
 													<>
 														{formatCurrency(
@@ -210,7 +204,7 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 													'-'
 												)}
 											</TableCell>
-											<TableCell className='hidden lg:table-cell text-xs sm:text-sm'>
+											<TableCell className='text-xs sm:text-sm'>
 												{profit !== null ? (
 													<span
 														className={
