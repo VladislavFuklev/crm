@@ -33,6 +33,8 @@ type Product = {
 	costPrice: number
 	sellingPrice: number | null
 	status: string
+	quantity: number
+	soldQuantity: number
 	createdAt: string
 }
 
@@ -70,8 +72,8 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 	}
 
 	const getProfit = (product: Product) => {
-		if (product.status !== 'sold' || !product.sellingPrice) return null
-		return product.sellingPrice - product.costPrice
+		if (product.soldQuantity === 0 || !product.sellingPrice) return null
+		return (product.sellingPrice - product.costPrice) * product.soldQuantity
 	}
 
 	const handleEdit = (product: Product) => {
@@ -144,6 +146,9 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 								<TableHead className='hidden sm:table-cell'>
 									Себестоимость
 								</TableHead>
+								<TableHead className='hidden sm:table-cell'>
+									Количество
+								</TableHead>
 								<TableHead className='hidden md:table-cell'>
 									Цена продажи
 								</TableHead>
@@ -159,7 +164,7 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 							{filteredProducts.length === 0 ? (
 								<TableRow>
 									<TableCell
-										colSpan={7}
+										colSpan={8}
 										className='text-center text-muted-foreground py-8'
 									>
 										Нет товаров для отображения
@@ -168,16 +173,42 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 							) : (
 								filteredProducts.map(product => {
 									const profit = getProfit(product)
+									const availableQty = product.quantity - product.soldQuantity
 									return (
 										<TableRow key={product.id}>
 											<TableCell className='font-medium text-xs sm:text-sm'>
 												{product.name}
 											</TableCell>
 											<TableCell className='hidden sm:table-cell text-xs sm:text-sm'>
-												{formatCurrency(product.costPrice)}
+												{formatCurrency(product.costPrice * product.quantity)}
+												<span className='text-xs text-muted-foreground ml-1'>
+													(×{product.quantity})
+												</span>
+											</TableCell>
+											<TableCell className='hidden sm:table-cell text-xs sm:text-sm'>
+												<div className='flex flex-col'>
+													<span>{product.quantity} шт</span>
+													<span className='text-xs text-muted-foreground'>
+														Продано: {product.soldQuantity}
+													</span>
+													<span className='text-xs text-muted-foreground'>
+														Доступно: {availableQty}
+													</span>
+												</div>
 											</TableCell>
 											<TableCell className='hidden md:table-cell text-xs sm:text-sm'>
-												{formatCurrency(product.sellingPrice)}
+												{product.soldQuantity > 0 && product.sellingPrice ? (
+													<>
+														{formatCurrency(
+															product.sellingPrice * product.soldQuantity
+														)}
+														<span className='text-xs text-muted-foreground ml-1'>
+															(×{product.soldQuantity})
+														</span>
+													</>
+												) : (
+													'-'
+												)}
 											</TableCell>
 											<TableCell className='hidden lg:table-cell text-xs sm:text-sm'>
 												{profit !== null ? (
@@ -197,10 +228,16 @@ export function ProductTable({ products, onUpdate }: ProductTableProps) {
 													className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-medium ${
 														product.status === 'sold'
 															? 'bg-green-100 text-green-800'
+															: product.status === 'partially_sold'
+															? 'bg-yellow-100 text-yellow-800'
 															: 'bg-blue-100 text-blue-800'
 													}`}
 												>
-													{product.status === 'sold' ? 'Продано' : 'Наличие'}
+													{product.status === 'sold'
+														? 'Продано'
+														: product.status === 'partially_sold'
+														? 'Частично продано'
+														: 'В наличии'}
 												</span>
 											</TableCell>
 											<TableCell className='hidden xl:table-cell text-xs'>

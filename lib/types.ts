@@ -5,7 +5,9 @@ export type Product = {
 	name: string
 	costPrice: number
 	sellingPrice: number | null
-	status: 'available' | 'sold'
+	status: 'available' | 'sold' | 'partially_sold'
+	quantity: number
+	soldQuantity: number
 	createdAt: string
 	soldAt: string | null
 }

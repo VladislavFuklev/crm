@@ -11,13 +11,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
 import { useEffect, useState } from 'react'
 
 type Product = {
@@ -26,6 +19,8 @@ type Product = {
 	costPrice: number
 	sellingPrice: number | null
 	status: string
+	quantity: number
+	soldQuantity: number
 	createdAt: string
 }
 
@@ -47,7 +42,8 @@ export function ProductForm({
 		name: product?.name || '',
 		costPrice: product?.costPrice?.toString() || '',
 		sellingPrice: product?.sellingPrice?.toString() || '',
-		status: product?.status || 'available',
+		quantity: product?.quantity?.toString() || '1',
+		soldQuantity: product?.soldQuantity?.toString() || '0',
 	})
 
 	// Обновление формы при изменении product
@@ -57,14 +53,16 @@ export function ProductForm({
 				name: product.name || '',
 				costPrice: product.costPrice?.toString() || '',
 				sellingPrice: product.sellingPrice?.toString() || '',
-				status: product.status || 'available',
+				quantity: product.quantity?.toString() || '1',
+				soldQuantity: product.soldQuantity?.toString() || '0',
 			})
 		} else {
 			setFormData({
 				name: '',
 				costPrice: '',
 				sellingPrice: '',
-				status: 'available',
+				quantity: '1',
+				soldQuantity: '0',
 			})
 		}
 	}, [product, open])
@@ -75,8 +73,18 @@ export function ProductForm({
 
 		try {
 			const url = product ? `/api/products/${product.id}` : '/api/products'
-
 			const method = product ? 'PATCH' : 'POST'
+
+			const soldQty = parseInt(formData.soldQuantity)
+			const totalQty = parseInt(formData.quantity)
+
+			// Автоматический расчет статуса
+			let status = 'available'
+			if (soldQty > 0 && soldQty < totalQty) {
+				status = 'partially_sold'
+			} else if (soldQty === totalQty && soldQty > 0) {
+				status = 'sold'
+			}
 
 			const payload = {
 				name: formData.name,
@@ -84,7 +92,9 @@ export function ProductForm({
 				sellingPrice: formData.sellingPrice
 					? parseFloat(formData.sellingPrice)
 					: null,
-				status: formData.status,
+				status,
+				quantity: totalQty,
+				soldQuantity: soldQty,
 			}
 
 			const response = await fetch(url, {
@@ -104,7 +114,8 @@ export function ProductForm({
 					name: '',
 					costPrice: '',
 					sellingPrice: '',
-					status: 'available',
+					quantity: '1',
+					soldQuantity: '0',
 				})
 			}
 		} catch (error) {
@@ -159,26 +170,49 @@ export function ProductForm({
 						</div>
 
 						<div className='grid gap-2'>
-							<Label htmlFor='status'>Статус</Label>
-							<Select
-								value={formData.status}
-								onValueChange={value =>
-									setFormData({ ...formData, status: value })
+							<Label htmlFor='quantity'>Общее количество *</Label>
+							<Input
+								id='quantity'
+								type='number'
+								min='1'
+								step='1'
+								value={formData.quantity}
+								onChange={e =>
+									setFormData({ ...formData, quantity: e.target.value })
 								}
-							>
-								<SelectTrigger>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value='available'>В наличии</SelectItem>
-									<SelectItem value='sold'>Продано</SelectItem>
-								</SelectContent>
-							</Select>
+								placeholder='1'
+								required
+							/>
 						</div>
 
-						{formData.status === 'sold' && (
+						<div className='grid gap-2'>
+							<Label htmlFor='soldQuantity'>Продано (шт)</Label>
+							<Input
+								id='soldQuantity'
+								type='number'
+								min='0'
+								max={formData.quantity}
+								step='1'
+								value={formData.soldQuantity}
+								onChange={e => {
+									const soldQty = e.target.value
+									setFormData({ ...formData, soldQuantity: soldQty })
+								}}
+								placeholder='0'
+							/>
+							<p className='text-xs text-muted-foreground'>
+								Доступно:{' '}
+								{parseInt(formData.quantity || '0') -
+									parseInt(formData.soldQuantity || '0')}{' '}
+								шт
+							</p>
+						</div>
+
+						{parseInt(formData.soldQuantity) > 0 && (
 							<div className='grid gap-2'>
-								<Label htmlFor='sellingPrice'>Цена продажи (UAH) *</Label>
+								<Label htmlFor='sellingPrice'>
+									Цена продажи за единицу (UAH) *
+								</Label>
 								<Input
 									id='sellingPrice'
 									type='number'
@@ -188,11 +222,11 @@ export function ProductForm({
 										setFormData({ ...formData, sellingPrice: e.target.value })
 									}
 									placeholder='0.00'
-									required={formData.status === 'sold'}
+									required={parseInt(formData.soldQuantity) > 0}
 								/>
 							</div>
 						)}
-					</div>{' '}
+					</div>
 					<DialogFooter className='flex-col sm:flex-row gap-2'>
 						<Button
 							type='button'

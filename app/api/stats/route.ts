@@ -13,41 +13,57 @@ export async function GET() {
 	try {
 		const products = await prisma.product.findMany()
 
-		const totalCost = products.reduce((sum: number, p) => sum + p.costPrice, 0)
+		// Учитываем quantity при подсчете себестоимости
+		const totalCost = products.reduce(
+			(sum: number, p) => sum + p.costPrice * p.quantity,
+			0
+		)
+
+		// Учитываем soldQuantity при подсчете выручки
 		const totalRevenue = products
-			.filter(p => p.status === 'sold' && p.sellingPrice)
-			.reduce((sum: number, p) => sum + (p.sellingPrice || 0), 0)
+			.filter(p => p.soldQuantity > 0 && p.sellingPrice)
+			.reduce(
+				(sum: number, p) => sum + (p.sellingPrice || 0) * p.soldQuantity,
+				0
+			)
+
+		// Учитываем soldQuantity при подсчете себестоимости проданных товаров
 		const totalProfit =
 			totalRevenue -
 			products
-				.filter(p => p.status === 'sold')
-				.reduce((sum: number, p) => sum + p.costPrice, 0)
+				.filter(p => p.soldQuantity > 0)
+				.reduce((sum: number, p) => sum + p.costPrice * p.soldQuantity, 0)
 
-		const soldProducts = products.filter(p => p.status === 'sold')
-		const availableProducts = products.filter(p => p.status === 'available')
+		// Считаем общее количество с учетом soldQuantity
+		const soldCount = products.reduce((sum, p) => sum + p.soldQuantity, 0)
+		const availableCount = products.reduce(
+			(sum, p) => sum + (p.quantity - p.soldQuantity),
+			0
+		)
+		const totalCount = products.reduce((sum, p) => sum + p.quantity, 0)
 
 		// Группировка по дням для графиков
 		const dailyStats = products
-			.filter(p => p.status === 'sold')
+			.filter(p => p.soldQuantity > 0)
 			.reduce((acc: DailyStat[], product) => {
 				const date = product.createdAt.toISOString().split('T')[0]
 				const existing = acc.find(item => item.date === date)
 
-				const revenue = product.sellingPrice || 0
-				const profit = revenue - product.costPrice
+				const revenue = (product.sellingPrice || 0) * product.soldQuantity
+				const profit = revenue - product.costPrice * product.soldQuantity
 
 				if (existing) {
 					existing.revenue += revenue
 					existing.profit += profit
-					existing.cost += product.costPrice
-					existing.count += 1
+					existing.cost += product.costPrice * product.soldQuantity
+					existing.count += product.soldQuantity
 				} else {
 					acc.push({
 						date,
 						revenue,
 						profit,
-						cost: product.costPrice,
-						count: 1,
+						cost: product.costPrice * product.soldQuantity,
+						count: product.soldQuantity,
 					})
 				}
 				return acc
@@ -58,9 +74,9 @@ export async function GET() {
 			totalCost,
 			totalRevenue,
 			totalProfit,
-			soldCount: soldProducts.length,
-			availableCount: availableProducts.length,
-			totalCount: products.length,
+			soldCount,
+			availableCount,
+			totalCount,
 			dailyStats,
 		})
 	} catch (error) {

@@ -14,12 +14,14 @@ datasource db {
 }
 
 model Product {
-  id           String   @id @default(cuid())
-  name         String
-  costPrice    Float    // Себестоимость
-  sellingPrice Float?   // Цена продажи (null если еще не продан)
-  status       String   @default("available") // available, sold
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  name          String
+  costPrice     Float    // Себестоимость за единицу
+  sellingPrice  Float?   // Цена продажи за единицу
+  status        String   @default("available") // available, sold, partially_sold
+  quantity      Int      @default(1) // Общее количество товаров
+  soldQuantity  Int      @default(0) // Количество проданных товаров
+  createdAt     DateTime @default(now())
   
   @@map("products")
 }
